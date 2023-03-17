@@ -1,3 +1,4 @@
+-- https://www.prologistics.info/react/logs/issue_logs/183026/
 SELECT ai1.article_id
 ,	ai1.import_date
 ,	ai1.country_code
