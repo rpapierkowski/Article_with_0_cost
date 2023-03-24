@@ -1,22 +1,23 @@
 SELECT	
-		ooc.id AS "Container Id"
-,		ooc2.id as "Main Container Id"
-,		IF(ooc.master_id = 0, "Main Container", "Subcontainer") master_container
- ,		IF(ooc.id = 
-				 (
-				 SELECT DISTINCT(ooc3.master_id)
-				 FROM op_order_container ooc3
-				 WHERE ooc.id = ooc3.master_id
-				 ) , 'YES', 'NO') AS "Have Subcontainers"
-,		imp.Import_Date						
-,		IF(ooc.master_id = 0, ooc.container_no, ooc2.container_no) container_name 
-,		ooc.order_id
-,		CONCAT('https://www.prologistics.info/op_order.php?id=',ooc.order_id) AS link_order
-
-,		SUM(IFNULL(IF(oof.currency = 'USD', oof.value, r.value * oof.value),0)) AS "Cost USD"
-,		oof.comment AS Invoice
-,       IF(ooc.master_id = 0 ,TRIM(ooc.shipping_line), TRIM(ooc2.shipping_line)) AS "Shipping Line"
-,		IF(ooc.master_id = 0 , opc.name, opc2.name) AS "Shipping Company Name"
+	ooc.id AS "Container Id"
+,	ooc2.id as "Main Container Id"
+,	IF(ooc.master_id = 0, "Main Container", "Subcontainer") master_container
+,	IF(ooc.id = 
+			 (
+			 SELECT DISTINCT(ooc3.master_id)
+			 FROM op_order_container ooc3
+			 WHERE ooc.id = ooc3.master_id
+			 ) , 'YES', 'NO') AS "Have Subcontainers"
+,	imp.Import_Date						
+,	IF(ooc.master_id = 0, ooc.container_no, ooc2.container_no) container_name 
+,	ooc.order_id
+,	CONCAT('https://www.prologistics.info/op_order.php?id=',ooc.order_id) AS link_order
+,	SUM(IFNULL(IF(oof.currency = 'USD', oof.value, r.value * oof.value),0)) AS "Cost USD"
+,	oof.comment AS Invoice
+,	IF(ooc.master_id = 0 ,TRIM(ooc.shipping_line), TRIM(ooc2.shipping_line)) AS "Shipping Line"
+,	IF(ooc.master_id = 0 , opc.name, opc2.name) AS "Shipping Company Name"
+,	oo.close_date AS "Order Closed Date"
+,	IF(oo.close_date IS NULL, 'No', 'Yes') AS "Order Closed"
 ,	(
 		SELECT rate_chf_average.value
 		FROM rate_chf_average
@@ -43,7 +44,6 @@ SELECT
 				AND tl.Updated <= oaa.delivered
 			 	ORDER BY tl.Updated DESC
 				LIMIT 1)) Estimated_cost
-
 		
 		FROM op_order_fee oof
 		
@@ -60,8 +60,7 @@ SELECT
 		AND oof.order_container_id = ooc.id
 		GROUP BY oof.order_container_id)
 		,0) AS "Estimated Cost (USD)"
-
-
+		
 
 FROM op_order_container ooc
 
@@ -86,7 +85,6 @@ LEFT JOIN op_company opc2 ON
 LEFT JOIN 	(
 	SELECT	 MIN(oa.add_to_warehouse_date ) AS delivered
 ,			oa.container_id
--- ,			oa.op_order_id
 	FROM op_article oa
 	GROUP BY oa.container_id
 			) oaa ON oaa.container_id = ooc.id	
