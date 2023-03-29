@@ -1,4 +1,4 @@
-SELECT tl.tableid AS id
+SELECT tl.tableid AS sa_id
 ,	datediff(curdate(),tl.Updated) as "today"
 ,	tl.Updated as"new"
 ,	tl2.Updated as "old"
@@ -16,6 +16,5 @@ CROSS JOIN total_log tl2 ON tl2.table_name_id=495
 	WHERE 
 	 tl.table_name_id=495 
 	AND tl.field_name_id=36 
-	-- AND tl.tableID BETWEEN 20000 AND 30000
 	
 GROUP BY tl2.id
