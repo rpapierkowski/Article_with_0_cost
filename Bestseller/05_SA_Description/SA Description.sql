@@ -15,7 +15,6 @@
 ,	IF(sa.available=1,"Yes","No") Available
 ,	IF(sa.inactive = 1, 'No','Yes') AS Active
 ,	s_param.par_value as "Total carton number"
-,	IF(sa.inactive = 0, "YES", "NO") AS "SA active"
 ,	IF(s_pic.doc_id IS NULL,' ',CONCAT("https://pictureserver.net/images/pic/5e/2b/undef_src_sa_picid_",s_pic.doc_id,"_type_whitesh_image.jpg?ver=21")) AS "Master SA image"
 ,	IFNULL(sa.master_sa, sa.id) AS "Master SA ID"
 ,	CONCAT("https://www.prologistics.info/react/condensed/condensed_sa/",IFNULL(sa.master_sa, sa.id),"/") AS "URL Master SA"
@@ -44,9 +43,9 @@
 			AND transl.field_name_id = 58
 			AND transl.table_name_id = 446
 			AND transl.language = 'english'
-		WHERE saved_id = ifnull(msa.id,sa.id)
+		WHERE saved_id = IFNULL(msa.id,sa.id)
 			AND p.par_key = 'sa_description[]' 
-		ORDER BY s.id limit 1 
+		ORDER BY s.id LIMIT 1 
 	) AS "Material"
     
 ,	(
@@ -59,9 +58,9 @@
 			AND transl.field_name_id = 58
 			AND transl.table_name_id = 446
 			AND transl.language = 'english'
-		WHERE saved_id = ifnull(msa.id,sa.id)  
+		WHERE saved_id = IFNULL(msa.id,sa.id)  
 			AND p.par_key = 'sa_description[]' 
-		ORDER BY s.id limit 1 
+		ORDER BY s.id LIMIT 1 
 	) AS "Color"
 	
 
@@ -69,22 +68,41 @@ FROM saved_auctions sa
 	
 LEFT JOIN saved_auctions msa ON msa.id = sa.master_sa
 
-LEFT JOIN shop_catalogue sp ON sp.id = IFNULL(sa.main_assigned_category,msa.main_assigned_category)
-    
-LEFT JOIN translation tr ON tr.id = IFNULL(sa.main_assigned_category,msa.main_assigned_category)
-	AND tr.field_name_id = 8
-	AND tr.table_name_id = 573
-	AND tr.language = 'english'
+    LEFT JOIN
+saved_auctions uksa ON uksa.master_sa = sa.master_sa AND uksa.username="Beliani UK"
 
-LEFT JOIN translation tra ON tra.id = IFNULL(sa.main_assigned_group,msa.main_assigned_group)
-	AND tra.field_name_id = 8
-	AND tra.table_name_id = 573
-	AND tra.language = 'english'
+LEFT JOIN
+saved_auctions desa ON desa.master_sa = sa.master_sa AND desa.username="Beliani DE"
+
+LEFT JOIN
+saved_auctions frsa ON frsa.master_sa = sa.master_sa AND frsa.username="Beliani FR"
+    
+LEFT JOIN
+    shop_catalogue sp ON sp.id = IF(sa.username="Design_UK",uksa.main_assigned_category,
+	IF(sa.username="Schoenteakmoebel",desa.main_assigned_category,
+		IF(sa.username="FR_Design",frsa.main_assigned_category, IFNULL(sa.main_assigned_category,msa.main_assigned_category))))
         
-LEFT JOIN translation  tran ON  tran.id = sp.parent_id
-	AND tran.field_name_id = 8
-	AND tran.table_name_id = 573
-	AND tran.language = 'english'
+LEFT JOIN
+    translation tr ON tr.id = IF(sa.username="Design_UK",uksa.main_assigned_category,
+	IF(sa.username="Schoenteakmoebel",desa.main_assigned_category,
+		IF(sa.username="FR_Design",frsa.main_assigned_category,IFNULL(sa.main_assigned_category,msa.main_assigned_category))))
+			AND tr.field_name_id = 8
+			AND tr.table_name_id = 573
+			AND tr.language = 'english'
+
+LEFT JOIN
+    translation tra ON tra.id = IF(sa.username="Design_UK",uksa.main_assigned_group,
+	IF(sa.username="Schoenteakmoebel",desa.main_assigned_group,
+		IF(sa.username="FR_Design",frsa.main_assigned_group,IFNULL(sa.main_assigned_group,msa.main_assigned_group))))
+			AND tra.field_name_id = 8
+			AND tra.table_name_id = 573
+			AND tra.language = 'english'
+            
+LEFT JOIN
+    translation  tran ON  tran.id =  sp.parent_id
+			AND tran.field_name_id = 8
+			AND tran.table_name_id = 573
+			AND tran.language = 'english'
 
 LEFT JOIN saved_params s_par ON s_par.saved_id=IFNULL(msa.id,sa.id)
 	AND s_par.par_key="article_name"
@@ -101,7 +119,5 @@ LEFT JOIN saved_pic s_pic ON s_pic.saved_id=IFNULL(msa.id,sa.id)
 	AND s_pic.ordering=1	
 
 LEFT JOIN op_order_container opc ON opc.id=sa.available_container_id
-	
--- WHERE sa.id BETWEEN 20000 AND 30000	
-	
+
 GROUP BY sa.id

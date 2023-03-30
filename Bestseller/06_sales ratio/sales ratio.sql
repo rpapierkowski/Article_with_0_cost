@@ -103,7 +103,5 @@ WHERE au.end_time > "2017-12-31 23:59:59"
 	AND IF(mau.rma_id IS NULL, au.rma_id,mau.rma_id) = 0 
 	AND a.admin_id = 0
 	AND o.manual = 0 
-
--- 	AND au.saved_id BETWEEN 20000 and 30000
 		
 GROUP BY o.id
