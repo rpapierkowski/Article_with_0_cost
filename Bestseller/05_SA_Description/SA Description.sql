@@ -68,7 +68,7 @@ FROM saved_auctions sa
 	
 LEFT JOIN saved_auctions msa ON msa.id = sa.master_sa
 
-    LEFT JOIN
+LEFT JOIN
 saved_auctions uksa ON uksa.master_sa = sa.master_sa AND uksa.username="Beliani UK"
 
 LEFT JOIN
