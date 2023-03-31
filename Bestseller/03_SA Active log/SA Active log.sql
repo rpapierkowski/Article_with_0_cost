@@ -1,5 +1,4 @@
 SELECT tl.tableid AS sa_id
-,	datediff(curdate(),tl.Updated) as "today"
 ,	tl.Updated as"new"
 ,	tl2.Updated as "old"
 ,	tl.new_value
