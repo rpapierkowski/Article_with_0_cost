@@ -2,7 +2,6 @@ SELECT  a.article_id
 ,	t.value AS 'Article Name'
 ,	IF(a.wpicture_URL = '',CONCAT("https://www.prologistics.info",a.picture_URL),CONCAT("https://www.prologistics.info",a.wpicture_URL)) AS "URL article pic"
 ,	CONCAT('https://www.prologistics.info/article.php?original_article_id=', a.article_id , 'order=name') AS 'URL Article'
-,	a.company_id
 , 	oc.name AS Supplier
 ,	a.group_id AS "Article Group ID"
 ,	(
