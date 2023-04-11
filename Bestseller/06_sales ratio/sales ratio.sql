@@ -13,7 +13,6 @@ SELECT
 	,	au.username
 	,	IF(ss.username= ' '
 	,	ss.name,ss.username)) AS "Seller"
-	, a.group_id
 ,	IF(au.source_seller_id=0
 	,	si.seller_name
 	,	ss.name) AS "Source seller"
