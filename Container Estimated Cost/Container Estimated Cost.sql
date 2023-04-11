@@ -31,7 +31,7 @@ SELECT
 ,	IF(ooc.agent_payment = 1 AND ooc.balance_payment = 1 AND ooc.local_charge_payment = 1 AND ooc.container_released = 1 , 'Closed', 'Open') AS "Container Closed"
 ,	IF(oaa.delivered < "2022-09-06 00:00:00" 
 		 	,	SUM(ROUND(IFNULL(IF(oof.currency = 'USD', oof.value, r.value * oof.value),0),2))
-		 	,	SUM(oof.estimated_cost_usd)) AS "Estimated Cost (USD)"
+		 	,	SUM(ROUND(oof.estimated_cost_usd,2))) AS "Estimated Cost (USD)"
 ,	IF(oof.fee_name IN("shipping_fee", "THC"), 'Sea Logistics' , IF(oof.fee_name IN("transport_fee", "custom_cost"), 'Import Customs', 'Others')) AS "Fee Group"
 
 
