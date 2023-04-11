@@ -7,7 +7,22 @@ SELECT  IF(oaa.delivered < "2022-09-20 00:00:00",
 		tl.table_name_id = 254
 		AND tl.field_name_id = 58
 		AND tl.Updated >= "2022-09-20 00:00:00"
-		AND tl.TableID = 229
+		AND tl.TableID IN (229
+,231
+,233
+,235
+,237
+,239
+,241
+,243
+,245
+,247
+,249
+,251
+,253
+,255
+,257
+,259)
 		AND tl.Updated <= oaa.delivered
 	-- 	AND lv.`key` = oof.fee_name
 	 	ORDER BY tl.Updated DESC
@@ -27,4 +42,13 @@ LEFT JOIN 	(
 LEFT JOIN rate r ON r.curr_code = oof.currency AND Date(oaa.delivered) = r.date
 
 WHERE oaa.delivered >  "2020-01-01 00:00:00" 
+and oof.order_container_id=24936
 GROUP BY oof.order_container_id
+
+
+
+
+SELECT *
+FROM list_value lv 
+WHERE par_name = "estimated_container_cost_usd"
+order by id

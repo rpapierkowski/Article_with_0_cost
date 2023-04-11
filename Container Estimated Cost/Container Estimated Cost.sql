@@ -29,38 +29,11 @@ SELECT
 ,	oo.order_date
 ,	IF(ooc.agent_payment IS NULL, NULL, IF(ooc.agent_payment = 1, 'Paid', 'Not Paid')) AS "Agent Payment"
 ,	IF(ooc.agent_payment = 1 AND ooc.balance_payment = 1 AND ooc.local_charge_payment = 1 AND ooc.container_released = 1 , 'Closed', 'Open') AS "Container Closed"
+,	IF(oaa.delivered < "2022-09-06 00:00:00" 
+		 	,	SUM(ROUND(IFNULL(IF(oof.currency = 'USD', oof.value, r.value * oof.value),0),2))
+		 	,	SUM(oof.estimated_cost_usd)) AS "Estimated Cost (USD)"
 ,	IF(oof.fee_name IN("shipping_fee", "THC"), 'Sea Logistics' , IF(oof.fee_name IN("transport_fee", "custom_cost"), 'Import Customs', 'Others')) AS "Fee Group"
-,	IF(oof.fee_name = "shipping_fee"
-		, (SELECT  IF(oaa.delivered < "2022-09-06 00:00:00" 
-		 	, SUM(ROUND(IFNULL(IF(oof.currency = 'USD', oof.value, r.value * oof.value),0),2))
-			, (		SELECT tl.New_value 
-				FROM total_log tl
-				LEFT JOIN list_value lv ON tl.TableID = lv.id
-				WHERE 
-				tl.table_name_id = 254
-				AND tl.field_name_id = 58
-				AND tl.Updated >= "2022-09-06 00:00:00"
-				AND tl.TableID = 229
-				AND tl.Updated <= oaa.delivered
-			 	ORDER BY tl.Updated DESC
-				LIMIT 1)) Estimated_cost
-		
-		FROM op_order_fee oof
-		
-		LEFT JOIN 	(
-			SELECT	 MIN(oa.add_to_warehouse_date ) AS delivered
-				, oa.container_id
-				FROM op_article oa
-				GROUP BY oa.container_id
-					) oaa ON oaa.container_id = oof.order_container_id
-					
-		LEFT JOIN rate r ON r.curr_code = oof.currency AND Date(oaa.delivered) = r.date
-		
-		WHERE oaa.delivered >  "2020-01-01 00:00:00" 
-		AND oof.order_container_id = ooc.id
-		GROUP BY oof.order_container_id)
-		,0) AS "Estimated Cost (USD)"
-		
+
 
 FROM op_order_container ooc
 
@@ -111,6 +84,5 @@ LEFT JOIN
 LEFT JOIN op_order oo ON ooc.order_id = oo.id
 
 WHERE oaa.delivered >  "2020-01-01 00:00:00" 
---  AND ooc.id = 16396
- -- AND ooc.order_id = 9094
+
 GROUP BY ooc.id, IF(oof.fee_name IN("shipping_fee", "THC"), 'Sea Logistics' , IF(oof.fee_name IN("transport_fee", "custom_cost"), 'Import Customs', 'Others')), oof.comment

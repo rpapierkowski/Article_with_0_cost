@@ -119,5 +119,5 @@ LEFT JOIN saved_pic s_pic ON s_pic.saved_id=IFNULL(msa.id,sa.id)
 	AND s_pic.ordering=1	
 
 LEFT JOIN op_order_container opc ON opc.id=sa.available_container_id
-
+	
 GROUP BY sa.id
