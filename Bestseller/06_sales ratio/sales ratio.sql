@@ -7,7 +7,6 @@ SELECT
 ,	au.main_auction_number AS "Main auftrag"
 ,	ac.purchase_price AS 'Purchase price'
 ,	o.quantity AS "Total no of articles"
-,	a.group_id 
 ,	IF(au.deleted=1 and a_del.name is null,'other reason',a_del.name) as 'Delete reason'
 ,	CONCAT("https://www.prologistics.info/auction.php?number=", au.main_auction_number,"&txnid=",au.txnid) AS "URL Main auftrag"
 ,	IF(au.source_seller_id = 0
