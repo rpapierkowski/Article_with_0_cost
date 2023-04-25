@@ -1,9 +1,10 @@
-SELECT  a.article_id
+SELECT  a.article_id AS "Article ID"
 ,	t.value AS 'Article Name'
 ,	IF(a.wpicture_URL = '',CONCAT("https://www.prologistics.info",a.picture_URL),CONCAT("https://www.prologistics.info",a.wpicture_URL)) AS "URL article pic"
 ,	CONCAT('https://www.prologistics.info/article.php?original_article_id=', a.article_id , 'order=name') AS 'URL Article'
 , 	oc.name AS Supplier
 ,	a.group_id AS "Article Group ID"
+,	IF(eolif0 = 1, "Yes", "No") AS EOL
 ,	(
 	SELECT `prologis2`.`fget_Article_stock`
 		( a.article_id,"0")
